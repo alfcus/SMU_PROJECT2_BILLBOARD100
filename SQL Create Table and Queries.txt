@@ -1,7 +1,11 @@
+-- Clearing database for reruns
 
-DROP TABLE main;
-DROP TABLE artist;
-DROP TABLE source;
+DROP TABLE IF EXISTS main;
+DROP TABLE IF EXISTS artist;
+DROP TABLE IF EXISTS source;
+
+
+-- Table creation ready to accept load
 
 CREATE TABLE "main" (
     "id" serial   NOT NULL,
@@ -39,6 +43,8 @@ REFERENCES "artist" ("artist_id");
 ALTER TABLE "main" ADD CONSTRAINT "fk_main_source_id" FOREIGN KEY("source_id")
 REFERENCES "source" ("source_id");
 
+
+-- Querying the database
 
 select * from main
 order by rank
@@ -82,7 +88,7 @@ on a.artist_id=b.artist_id join source c
 on a.source_id=c.source_id
 where b.artist like '%Drake%'
 
--- songs containing something something werds
+-- songs containing the word 'Love'
 select a.rank, a.song, b.artist, c.website
 from main a join artist b
 on a.artist_id=b.artist_id join source c
