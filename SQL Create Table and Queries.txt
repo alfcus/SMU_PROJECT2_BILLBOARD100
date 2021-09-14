@@ -1,0 +1,93 @@
+
+DROP TABLE main;
+DROP TABLE artist;
+DROP TABLE source;
+
+CREATE TABLE "main" (
+    "id" serial   NOT NULL,
+    "rank" int   NOT NULL,
+    "song" varchar(75)   NOT NULL,
+    "artist_id" int   NOT NULL,
+    "source_id" int   NOT NULL,
+    "last_updated" timestamp default localtimestamp NOT NULL,
+    CONSTRAINT "pk_main" PRIMARY KEY (
+        "id"
+     )
+);
+
+CREATE TABLE "artist" (
+    "artist_id" serial   NOT NULL,
+    "artist" varchar(75)   NOT NULL,
+    "last_updated" timestamp default localtimestamp NOT NULL,
+    CONSTRAINT "pk_artist" PRIMARY KEY (
+        "artist_id"
+     )
+);
+
+CREATE TABLE "source" (
+    "source_id" serial   NOT NULL,
+    "website" varchar(50)   NOT NULL,
+    "last_updated" timestamp default localtimestamp NOT NULL,
+    CONSTRAINT "pk_source" PRIMARY KEY (
+        "source_id"
+     )
+);
+
+ALTER TABLE "main" ADD CONSTRAINT "fk_main_artist_id" FOREIGN KEY("artist_id")
+REFERENCES "artist" ("artist_id");
+
+ALTER TABLE "main" ADD CONSTRAINT "fk_main_source_id" FOREIGN KEY("source_id")
+REFERENCES "source" ("source_id");
+
+
+select * from main
+order by rank
+
+select * from artist
+where artist like '%Drake%'
+
+select a.rank, a.song, b.artist, c.website from main a
+join artist b on a.artist_id=b.artist_id
+join source c on a.source_id=c.source_id
+where b.artist like '%Doja%'
+order by a.rank
+
+-- artist has the most songs (group by artist id count) with avg rank
+select round(avg(a.rank), 0) as "Rank_avg", count(b.artist) as "Song_count", b.artist
+from main a join artist b
+on a.artist_id=b.artist_id join source c
+on a.source_id=c.source_id
+group by b.artist
+order by "Song_count" desc
+
+-- top 10 of each source in one query
+select a.rank, a.song, b.artist, c.website
+from main a join artist b
+on a.artist_id=b.artist_id join source c
+on a.source_id=c.source_id
+where rank < 11
+order by a.rank, c.website
+
+-- where clause for drake
+select a.rank, a.song, b.artist, c.website
+from main a join artist b
+on a.artist_id=b.artist_id join source c
+on a.source_id=c.source_id
+where b.artist like '%Drake%'
+order by a.rank, c.website
+
+select count(*)
+from main a join artist b
+on a.artist_id=b.artist_id join source c
+on a.source_id=c.source_id
+where b.artist like '%Drake%'
+
+-- songs containing something something werds
+select a.rank, a.song, b.artist, c.website
+from main a join artist b
+on a.artist_id=b.artist_id join source c
+on a.source_id=c.source_id
+where a.song like '%Love%'
+order by a.rank, c.website
+
+
